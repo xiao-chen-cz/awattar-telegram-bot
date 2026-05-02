@@ -45,6 +45,22 @@ Minimum requirements:
 - Python 3.9+
 - Outbound HTTPS to `api.telegram.org` and `api.awattar.at`
 
+### Coolify (Dockerfile)
+
+The repo ships a `Dockerfile` so Coolify can build and run it directly:
+
+1. **New Resource → Application → Public Repository**, paste this repo's URL.
+2. **Build Pack:** Dockerfile.
+3. **Environment Variables:** add `TELEGRAM_TOKEN`.
+4. **Network / Ports:** leave empty — this is a worker, not an HTTP service. Disable the health check.
+5. Deploy. Logs should show `Application started — long polling`.
+
+Stop any local instance before deploying: Telegram allows only one long-polling consumer per token, and a second instance causes 409 conflicts.
+
+#### Why Dockerfile, not docker-compose
+
+Single-process worker, one env var, no database — `docker-compose.yml` would be pure boilerplate here. Coolify manages restarts, env vars, and logs from the UI, so the compose layer adds no value at this size. If we ever add a second service (cache, scheduler, second bot), switch to compose at that point — the Dockerfile carries over unchanged.
+
 ### systemd example
 
 ```ini
