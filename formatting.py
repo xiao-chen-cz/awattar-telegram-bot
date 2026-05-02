@@ -22,13 +22,13 @@ def format_price(slot: PriceSlot) -> str:
     )
 
 
-def format_today(slots: list[PriceSlot]) -> str:
+def format_day(slots: list[PriceSlot], label: str) -> str:
     if not slots:
-        return "Keine Preisdaten für heute verfügbar."
+        return f"Keine Preisdaten für {label} verfügbar."
 
     lines = [f"{_range(s):<11}  {s.price_ct_kwh:>6.2f} ct/kWh" for s in slots]
     table = "\n".join(lines)
-    header = f"<b>Strompreise heute</b> ({VAT_NOTE})"
+    header = f"<b>Strompreise {label}</b> ({VAT_NOTE})"
     return f"{header}\n<pre>{table}</pre>"
 
 

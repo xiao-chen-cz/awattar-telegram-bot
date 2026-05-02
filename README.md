@@ -5,12 +5,14 @@ A small Telegram bot that exposes Austrian day-ahead electricity prices from the
 
 ## Commands
 
-| Command   | Description                                  |
-| --------- | -------------------------------------------- |
-| `/preis`  | Current hour's price (gross, ct/kWh)         |
-| `/heute`  | All 24 hourly prices for today               |
-| `/billig` | The 3 cheapest hours of today                |
-| `/help`   | Command list and pricing notes               |
+| Command            | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `/preis`           | Current hour's price (gross, ct/kWh)                 |
+| `/heute`           | All 24 hourly prices for today                       |
+| `/morgen`          | Tomorrow's hourly prices (published ~14:00 Vienna)   |
+| `/billig`          | The 3 cheapest hours of today                        |
+| `/tag YYYY-MM-DD`  | Hourly prices for a specific day (past or future)    |
+| `/help`            | Command list and pricing notes                       |
 
 Prices shown are the **spot price including 20% Austrian VAT (USt.)**. Grid
 fees and the Awattar service fee are **not** included.

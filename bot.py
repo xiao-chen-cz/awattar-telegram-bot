@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
+from datetime import date, timedelta
 
 from dotenv import load_dotenv
 from telegram import Update
@@ -10,7 +11,7 @@ from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 from awattar import PriceSlot, fetch_day, now_vienna, today_vienna
-from formatting import format_cheapest, format_price, format_today
+from formatting import format_cheapest, format_day, format_price
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -23,12 +24,19 @@ HELP_TEXT = (
     "🔌 <b>Awattar AT Strompreis-Bot</b>\n\n"
     "/preis – aktueller Strompreis\n"
     "/heute – alle Stundenpreise heute\n"
-    "/billig – die 3 günstigsten Stunden heute\n\n"
+    "/morgen – alle Stundenpreise morgen (ab ca. 14:00 verfügbar)\n"
+    "/billig – die 3 günstigsten Stunden heute\n"
+    "/tag YYYY-MM-DD – Stundenpreise für einen bestimmten Tag\n\n"
     "<i>Preise = Spotpreis inkl. 20% USt., exkl. Netzentgelte und "
     "Awattar-Servicegebühr.</i>"
 )
 
 API_ERROR = "⚠️ Awattar-API gerade nicht erreichbar. Bitte später erneut versuchen."
+TAG_USAGE = "Format: /tag YYYY-MM-DD\nBeispiel: /tag 2026-04-30"
+MORGEN_NOT_READY = (
+    "📅 Die Preise für morgen werden täglich gegen 14:00 veröffentlicht. "
+    "Bitte später erneut versuchen."
+)
 
 
 async def _today_slots() -> list[PriceSlot]:
@@ -68,7 +76,46 @@ async def heute_cmd(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
         logger.exception("fetch_day failed for /heute")
         await update.message.reply_text(API_ERROR)
         return
-    await update.message.reply_text(format_today(slots), parse_mode=ParseMode.HTML)
+    await update.message.reply_text(
+        format_day(slots, "heute"), parse_mode=ParseMode.HTML
+    )
+
+
+async def morgen_cmd(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
+    tomorrow = today_vienna() + timedelta(days=1)
+    try:
+        slots = await fetch_day(tomorrow)
+    except Exception:
+        logger.exception("fetch_day failed for /morgen")
+        await update.message.reply_text(API_ERROR)
+        return
+    if not slots:
+        await update.message.reply_text(MORGEN_NOT_READY)
+        return
+    await update.message.reply_text(
+        format_day(slots, "morgen"), parse_mode=ParseMode.HTML
+    )
+
+
+async def tag_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    args = context.args or []
+    if len(args) != 1:
+        await update.message.reply_text(TAG_USAGE)
+        return
+    try:
+        target = date.fromisoformat(args[0])
+    except ValueError:
+        await update.message.reply_text(TAG_USAGE)
+        return
+    try:
+        slots = await fetch_day(target)
+    except Exception:
+        logger.exception("fetch_day failed for /tag %s", target)
+        await update.message.reply_text(API_ERROR)
+        return
+    await update.message.reply_text(
+        format_day(slots, f"am {target.isoformat()}"), parse_mode=ParseMode.HTML
+    )
 
 
 async def billig_cmd(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
@@ -94,7 +141,9 @@ def main() -> None:
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("preis", preis_cmd))
     app.add_handler(CommandHandler("heute", heute_cmd))
+    app.add_handler(CommandHandler("morgen", morgen_cmd))
     app.add_handler(CommandHandler("billig", billig_cmd))
+    app.add_handler(CommandHandler("tag", tag_cmd))
 
     logger.info("Application started — long polling")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
