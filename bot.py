@@ -27,9 +27,12 @@ HELP_TEXT = (
     "/morgen – alle Stundenpreise morgen (ab ca. 14:00 verfügbar)\n"
     "/billig – die 3 günstigsten Stunden heute\n"
     "/tag YYYY-MM-DD – Stundenpreise für einen bestimmten Tag\n\n"
-    "<i>Preise = Awattar HOURLY (EPEX-Spot + 1,50 ct/kWh Aufschlag) "
-    "inkl. 20% USt. Netzentgelte und 5,75 €/Monat Servicegebühr kommen "
-    "separat dazu.</i>"
+    "<i>Preise = Awattar HOURLY (EPEX + 1,50 ct/kWh Aufschlag) "
+    "+ Wiener Netze 1220 Arbeitspreis (NE7, inkl. Sommer-Netzentgelt "
+    "1.4.–30.9., 10–16 Uhr), alles inkl. 20% USt. "
+    "Nicht enthalten: 54 €/Jahr Netz-Grundpreis, 5,75 €/Monat Awattar-"
+    "Servicegebühr, Gebrauchsabgabe Wien und Förderbeiträge "
+    "(~1,5 ct/kWh).</i>"
 )
 
 API_ERROR = "⚠️ Awattar-API gerade nicht erreichbar. Bitte später erneut versuchen."

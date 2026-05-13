@@ -4,7 +4,7 @@ from datetime import datetime
 
 from awattar import PriceSlot
 
-VAT_NOTE = "HOURLY inkl. Aufschlag &amp; 20% USt."
+VAT_NOTE = "Energie + Netz Wien, inkl. 20% USt."
 
 
 def _hh(dt: datetime) -> str:
