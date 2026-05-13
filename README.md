@@ -12,6 +12,7 @@ A small Telegram bot that exposes Austrian day-ahead electricity prices from the
 | `/morgen`          | Tomorrow's hourly prices (published ~14:00 Vienna)   |
 | `/billig`          | The 3 cheapest hours of today                        |
 | `/tag YYYY-MM-DD`  | Hourly prices for a specific day (past or future)    |
+| `/info`            | Short transparency view: how the displayed price is composed |
 | `/help`            | Command list and pricing notes                       |
 
 Prices shown reflect what a **Vienna household on Awattar HOURLY** actually
@@ -35,6 +36,8 @@ September**, so the dynamic grid discount is visible in the daily curve.
 Customers outside Vienna 1220 or on a different network level should treat
 the displayed values as Vienna-specific — the grid constants in
 `awattar.py` would need to be adjusted for other operators.
+
+Full breakdown with sources: [`docs/pricing-model.md`](docs/pricing-model.md).
 
 ## Setup
 

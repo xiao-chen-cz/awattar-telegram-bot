@@ -26,13 +26,29 @@ HELP_TEXT = (
     "/heute – alle Stundenpreise heute\n"
     "/morgen – alle Stundenpreise morgen (ab ca. 14:00 verfügbar)\n"
     "/billig – die 3 günstigsten Stunden heute\n"
-    "/tag YYYY-MM-DD – Stundenpreise für einen bestimmten Tag\n\n"
-    "<i>Preise = Awattar HOURLY (EPEX + 1,50 ct/kWh Aufschlag) "
-    "+ Wiener Netze 1220 Arbeitspreis (NE7, inkl. Sommer-Netzentgelt "
-    "1.4.–30.9., 10–16 Uhr), alles inkl. 20% USt. "
-    "Nicht enthalten: 54 €/Jahr Netz-Grundpreis, 5,75 €/Monat Awattar-"
-    "Servicegebühr, Gebrauchsabgabe Wien und Förderbeiträge "
-    "(~1,5 ct/kWh).</i>"
+    "/tag YYYY-MM-DD – Stundenpreise für einen bestimmten Tag\n"
+    "/info – Preiszusammensetzung &amp; Transparenz\n\n"
+    "<i>Preise: Awattar HOURLY + Wiener Netze 1220, inkl. 20% USt. "
+    "Details mit /info.</i>"
+)
+
+INFO_TEXT = (
+    "🧮 <b>So setzt sich der Preis zusammen</b>\n\n"
+    "<pre>(EPEX-Spot + 1,50 ct/kWh Awattar HOURLY\n"
+    "            + Wiener Netze 1220 NE7) × 1,20 USt.</pre>\n"
+    "<b>Netzanteil (netto):</b>\n"
+    "• Normal: 7,68 ct/kWh (Arbeit 6,98 + Verlust 0,70)\n"
+    "• SNAP: 6,28 ct/kWh (1.4.–30.9., täglich 10–16 Uhr)\n"
+    "  → 1,68 ct/kWh günstiger pro kWh (brutto)\n\n"
+    "<b>Nicht enthalten</b> (flat, einfach drauf rechnen):\n"
+    "• 54 €/Jahr Netz-Grundpreis\n"
+    "• 5,75 €/Monat Awattar-Servicegebühr\n"
+    "• Gebrauchsabgabe Wien + Förderbeiträge (~1,5 ct/kWh)\n\n"
+    "<b>Annahme:</b> Awattar HOURLY-Kunde mit Wiener Netze Smart Meter "
+    "(Netzebene 7 ohne Leistungsmessung), nicht in einer "
+    "Erneuerbare-Energiegemeinschaft.\n\n"
+    "<b>Quellen:</b> Awattar HOURLY-Tarif + Wiener Netze WN-EX0105 "
+    "v1/2026 (gültig ab 1.1.2026)."
 )
 
 API_ERROR = "⚠️ Awattar-API gerade nicht erreichbar. Bitte später erneut versuchen."
@@ -53,6 +69,10 @@ async def start_cmd(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def help_cmd(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(HELP_TEXT, parse_mode=ParseMode.HTML)
+
+
+async def info_cmd(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(INFO_TEXT, parse_mode=ParseMode.HTML)
 
 
 async def preis_cmd(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
@@ -143,6 +163,7 @@ def main() -> None:
     app = Application.builder().token(token).build()
     app.add_handler(CommandHandler("start", start_cmd))
     app.add_handler(CommandHandler("help", help_cmd))
+    app.add_handler(CommandHandler("info", info_cmd))
     app.add_handler(CommandHandler("preis", preis_cmd))
     app.add_handler(CommandHandler("heute", heute_cmd))
     app.add_handler(CommandHandler("morgen", morgen_cmd))
