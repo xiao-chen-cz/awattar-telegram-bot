@@ -14,8 +14,27 @@ A small Telegram bot that exposes Austrian day-ahead electricity prices from the
 | `/tag YYYY-MM-DD`  | Hourly prices for a specific day (past or future)    |
 | `/help`            | Command list and pricing notes                       |
 
-Prices shown are the **spot price including 20% Austrian VAT (USt.)**. Grid
-fees and the Awattar service fee are **not** included.
+Prices shown reflect what a **Vienna household on Awattar HOURLY** actually
+pays per kWh:
+
+```
+( EPEX spot  +  1.50 ct/kWh Awattar markup
+              +  Wiener Netze NE7 grid (Arbeitspreis + Verlust) )  ×  1.20 VAT
+```
+
+The Wiener Netze **Sommer-Nieder-Arbeitspreis (SNAP)** is applied
+automatically for slots between **10:00–16:00 local from 1 April to 30
+September**, so the dynamic grid discount is visible in the daily curve.
+
+**Not included** (flat / monthly, so easy to add on the side):
+
+- 54 €/year network Grundpreis
+- 5.75 €/month Awattar service fee
+- Vienna Gebrauchsabgabe + Erneuerbaren-Förderbeiträge (~1.5 ct/kWh)
+
+Customers outside Vienna 1220 or on a different network level should treat
+the displayed values as Vienna-specific — the grid constants in
+`awattar.py` would need to be adjusted for other operators.
 
 ## Setup
 
@@ -76,5 +95,5 @@ Restart=on-failure
 ## Project layout
 
 - `bot.py` — Telegram handlers + polling loop
-- `awattar.py` — API client + unit conversion (EUR/MWh → ct/kWh, +20% VAT)
+- `awattar.py` — API client + price assembly (commodity + grid + VAT, SNAP-aware)
 - `formatting.py` — message formatters
