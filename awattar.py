@@ -8,6 +8,9 @@ import httpx
 
 VIENNA = ZoneInfo("Europe/Vienna")
 API_URL = "https://api.awattar.at/v1/marketdata"
+# HOURLY tariff: (EPEX spot + 1.50 ct/kWh markup) × 1.20 VAT.
+# Grid fees and the €5.75/month service fee are billed separately.
+HOURLY_MARKUP_CT_KWH = 1.50
 VAT_MULTIPLIER = 1.20
 
 
@@ -42,7 +45,8 @@ async def fetch_day(target_date: date) -> list[PriceSlot]:
             PriceSlot(
                 start=_from_ms(entry["start_timestamp"]),
                 end=_from_ms(entry["end_timestamp"]),
-                price_ct_kwh=(entry["marketprice"] / 10) * VAT_MULTIPLIER,
+                price_ct_kwh=(entry["marketprice"] / 10 + HOURLY_MARKUP_CT_KWH)
+                * VAT_MULTIPLIER,
             )
         )
     slots.sort(key=lambda s: s.start)

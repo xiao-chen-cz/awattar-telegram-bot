@@ -27,8 +27,9 @@ HELP_TEXT = (
     "/morgen – alle Stundenpreise morgen (ab ca. 14:00 verfügbar)\n"
     "/billig – die 3 günstigsten Stunden heute\n"
     "/tag YYYY-MM-DD – Stundenpreise für einen bestimmten Tag\n\n"
-    "<i>Preise = Spotpreis inkl. 20% USt., exkl. Netzentgelte und "
-    "Awattar-Servicegebühr.</i>"
+    "<i>Preise = Awattar HOURLY (EPEX-Spot + 1,50 ct/kWh Aufschlag) "
+    "inkl. 20% USt. Netzentgelte und 5,75 €/Monat Servicegebühr kommen "
+    "separat dazu.</i>"
 )
 
 API_ERROR = "⚠️ Awattar-API gerade nicht erreichbar. Bitte später erneut versuchen."
