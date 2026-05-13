@@ -6,7 +6,7 @@ import sys
 from datetime import date, timedelta
 
 from dotenv import load_dotenv
-from telegram import Update
+from telegram import BotCommand, Update
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -57,6 +57,21 @@ MORGEN_NOT_READY = (
     "📅 Die Preise für morgen werden täglich gegen 14:00 veröffentlicht. "
     "Bitte später erneut versuchen."
 )
+
+BOT_COMMANDS = [
+    BotCommand("preis", "aktueller Strompreis"),
+    BotCommand("heute", "alle Stundenpreise heute"),
+    BotCommand("morgen", "Stundenpreise morgen (ab ca. 14:00)"),
+    BotCommand("billig", "die 3 günstigsten Stunden heute"),
+    BotCommand("tag", "Stundenpreise für YYYY-MM-DD"),
+    BotCommand("info", "Preiszusammensetzung & Transparenz"),
+    BotCommand("help", "Befehlsübersicht"),
+]
+
+
+async def _sync_commands(app: Application) -> None:
+    await app.bot.set_my_commands(BOT_COMMANDS)
+    logger.info("Telegram command menu synced (%d commands)", len(BOT_COMMANDS))
 
 
 async def _today_slots() -> list[PriceSlot]:
@@ -160,7 +175,7 @@ def main() -> None:
     if not token:
         sys.exit("TELEGRAM_TOKEN missing. Copy .env.example to .env and set it.")
 
-    app = Application.builder().token(token).build()
+    app = Application.builder().token(token).post_init(_sync_commands).build()
     app.add_handler(CommandHandler("start", start_cmd))
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("info", info_cmd))
